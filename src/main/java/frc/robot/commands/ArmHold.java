@@ -1,6 +1,6 @@
 package frc.robot.commands;
 
-import org.wpilib.command2.Command;
+import org.wpilib.command3.Command;
 import frc.robot.subsystems.arm.Arm;
 
 public class ArmHold extends Command {
