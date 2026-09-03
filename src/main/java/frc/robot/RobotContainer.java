@@ -8,8 +8,10 @@ import com.pathplanner.lib.events.EventTrigger;
 import org.wpilib.math.geometry.Pose2d;
 import org.wpilib.math.geometry.Pose3d;
 import org.wpilib.math.geometry.Rotation2d;
-import org.wpilib.driverstation.DriverStation;
+import org.wpilib.driverstation.Alliance;
+import org.wpilib.driverstation.internal.DriverStationBackend;
 import org.wpilib.driverstation.NiDsXboxController;
+import org.wpilib.driverstation.POVDirection;
 import org.wpilib.smartdashboard.SendableChooser;
 import org.wpilib.smartdashboard.SmartDashboard;
 import org.wpilib.command3.Command;
@@ -20,7 +22,7 @@ import org.wpilib.command3.RunCommand;
 import org.wpilib.command3.WaitCommand;
 import org.wpilib.command3.button.JoystickButton;
 import org.wpilib.command3.button.POVButton;
-import org.wpilib.command3.button.Trigger;
+import org.wpilib.command3.Trigger;
 import frc.robot.commands.ArmHold;
 import frc.robot.commands.AutoAlign;
 import frc.robot.commands.DriveCommands;
@@ -52,6 +54,9 @@ import frc.robot.subsystems.vision.VisionIOLimelight;
 import frc.robot.util.RobotIdentity;
 import frc.robot.util.SmarterDashboard;
 import frc.robot.util.simulation.AlgaeHandler;
+// MAPLE SIM:
+// import org.ironmaple.simulation.SimulatedArena;
+// import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
 import org.littletonrobotics.junction.Logger;
 
 public class RobotContainer {
@@ -63,7 +68,7 @@ public class RobotContainer {
     private Climber climber;
     public static AutoAlign align;
 
-    private SwerveDriveSimulation driveSimulation = null;
+    // MAPLE SIM: private SwerveDriveSimulation driveSimulation = null;
 
     //     public static final LEDStrip ledstrip = LEDStrip.getInstance();
 
@@ -74,16 +79,16 @@ public class RobotContainer {
     // ---------------------------- Driver Controller --------------------------------- //
 
     private final JoystickButton resetHeading_Start =
-            new JoystickButton(driverController, XboxController.Button.kStart.value);
+            new JoystickButton(driverController, NiDsXboxController.Button.kStart.value);
 
-    private final POVButton reefAlignLeft_PovLeft = new POVButton(driverController, 270);
-    private final POVButton reefAlignCenter_PovDown = new POVButton(driverController, 180);
-    private final POVButton reefAlignRight_PovRight = new POVButton(driverController, 90);
-    private final POVButton stationAlign_PovUp = new POVButton(driverController, 0);
+    private final POVButton reefAlignLeft_PovLeft = new POVButton(driverController, POVDirection.LEFT);
+    private final POVButton reefAlignCenter_PovDown = new POVButton(driverController, POVDirection.DOWN);
+    private final POVButton reefAlignRight_PovRight = new POVButton(driverController, POVDirection.RIGHT);
+    private final POVButton stationAlign_PovUp = new POVButton(driverController, POVDirection.UP);
 
-    private final JoystickButton slowMode_A = new JoystickButton(driverController, XboxController.Button.kA.value);
+    private final JoystickButton slowMode_A = new JoystickButton(driverController, NiDsXboxController.Button.kA.value);
     private final JoystickButton zeroClimber_back =
-            new JoystickButton(driverController, XboxController.Button.kBack.value);
+            new JoystickButton(driverController, NiDsXboxController.Button.kBack.value);
 
     private final Trigger strafe_Triggers = new Trigger(
             () -> Math.abs(driverController.getRightTriggerAxis() - driverController.getLeftTriggerAxis()) > 0.1);
@@ -91,22 +96,22 @@ public class RobotContainer {
     // ----------------------------- Op Controller -------------------------------- //
 
     private final JoystickButton homeElevator_Start =
-            new JoystickButton(opController, XboxController.Button.kStart.value);
-    private final JoystickButton station_Back = new JoystickButton(opController, XboxController.Button.kBack.value);
-    private final JoystickButton levelFour_Y = new JoystickButton(opController, XboxController.Button.kY.value);
-    private final JoystickButton levelThree_B = new JoystickButton(opController, XboxController.Button.kB.value);
-    private final JoystickButton levelTwo_X = new JoystickButton(opController, XboxController.Button.kX.value);
-    private final JoystickButton stow_A = new JoystickButton(opController, XboxController.Button.kA.value);
+            new JoystickButton(opController, NiDsXboxController.Button.kStart.value);
+    private final JoystickButton station_Back = new JoystickButton(opController, NiDsXboxController.Button.kBack.value);
+    private final JoystickButton levelFour_Y = new JoystickButton(opController, NiDsXboxController.Button.kY.value);
+    private final JoystickButton levelThree_B = new JoystickButton(opController, NiDsXboxController.Button.kB.value);
+    private final JoystickButton levelTwo_X = new JoystickButton(opController, NiDsXboxController.Button.kX.value);
+    private final JoystickButton stow_A = new JoystickButton(opController, NiDsXboxController.Button.kA.value);
 
     private final JoystickButton coralMode_LB =
-            new JoystickButton(opController, XboxController.Button.kLeftBumper.value);
+            new JoystickButton(opController, NiDsXboxController.Button.kLeftBumper.value);
     private final JoystickButton algaeMode_RB =
-            new JoystickButton(opController, XboxController.Button.kRightBumper.value);
+            new JoystickButton(opController, NiDsXboxController.Button.kRightBumper.value);
 
-    private final POVButton climberStateInc_PovLeft = new POVButton(opController, 270);
-    private final POVButton climberStateDec_PovRight = new POVButton(opController, 90);
-    private final POVButton climberAdjustUp_PovUp = new POVButton(opController, 0);
-    private final POVButton climberAdjustDown_PovDown = new POVButton(opController, 180);
+    private final POVButton climberStateInc_PovLeft = new POVButton(opController, POVDirection.LEFT);
+    private final POVButton climberStateDec_PovRight = new POVButton(opController, POVDirection.RIGHT);
+    private final POVButton climberAdjustUp_PovUp = new POVButton(opController, POVDirection.UP);
+    private final POVButton climberAdjustDown_PovDown = new POVButton(opController, POVDirection.DOWN);
 
     private final Trigger elevatorAdjust = new Trigger(() -> Math.abs(opController.getLeftY()) > 0.9);
     private final Trigger armAdjust = new Trigger(() -> Math.abs(opController.getRightX()) > 0.9);
@@ -137,6 +142,7 @@ public class RobotContainer {
 
                 // Sim robot, instantiate physics sim IO implementations
 
+            /* MAPLE SIM:
             case SIM:
                 driveSimulation = new SwerveDriveSimulation(Drive.mapleSimConfig, new Pose2d(12, 2, new Rotation2d()));
                 SimulatedArena.getInstance().addDriveTrainSimulation(driveSimulation);
@@ -162,7 +168,7 @@ public class RobotContainer {
                 break;
 
                 // Replayed robot, disable IO implementations
-
+                */
             default:
                 elevator = new Elevator(new ElevatorIO() {});
                 arm = new Arm(new ArmIO() {});
@@ -172,9 +178,10 @@ public class RobotContainer {
         }
 
         align = new AutoAlign(drive::getPose);
+        /* MAPLE SIM:
         if (Constants.currentMode == Constants.Mode.SIM) {
             align.setRobotSupplier(driveSimulation::getSimulatedDriveTrainPose);
-        }
+        } */
 
         setDefaultCommands();
         registerNamedCommands();
@@ -196,7 +203,7 @@ public class RobotContainer {
                 .onTrue(new InstantCommand(() -> elevator.setElevatorLevelFourMode())
                         .andThen(new InstantCommand(() -> arm.setArmL4())));
 
-        DriverStation.silenceJoystickConnectionWarning(true);
+        DriverStationBackend.silenceJoystickConnectionWarning(true);
     }
 
     private void configureBindings() {
@@ -204,9 +211,12 @@ public class RobotContainer {
         // ------------------------------- Driver Bindings ------------------------------- //
 
         // Reset gyro / odometry
+        /* MAPLE SIM:
         final Runnable resetOdometry = Constants.currentMode == Constants.Mode.SIM
                 ? () -> drive.resetOdometry(driveSimulation.getSimulatedDriveTrainPose())
-                : () -> drive.resetOdometry(new Pose2d(drive.getPose().getTranslation(), new Rotation2d()));
+                : () -> drive.resetOdometry(new Pose2d(drive.getPose().getTranslation(), new Rotation2d()));*/
+        final Runnable resetOdometry = () -> drive.resetOdometry(new Pose2d(drive.getPose().getTranslation(), new Rotation2d()));
+
         resetHeading_Start.onTrue(Commands.runOnce(resetOdometry).ignoringDisable(true));
 
         reefAlignLeft_PovLeft.whileTrue(align.reefAlignLeft(drive));
@@ -296,9 +306,9 @@ public class RobotContainer {
     }
 
     public static boolean isRedAlliance() {
-        var alliance = DriverStation.getAlliance();
+        var alliance = DriverStationBackend.getAlliance();
         if (alliance.isPresent()) {
-            return alliance.get() == DriverStation.Alliance.Red;
+            return alliance.get() == Alliance.RED;
         }
         return false;
     }
@@ -389,14 +399,16 @@ public class RobotContainer {
         // ledstrip.setDefaultCommand(ledstrip.defaultCommand(() -> endEffector.isCoral()));
     }
 
+    /* MAPLE SIM:
     public void resetSimulation() {
         if (Constants.currentMode != Constants.Mode.SIM) return;
 
         drive.resetOdometry(new Pose2d(12, 2, new Rotation2d()));
         SimulatedArena.getInstance().resetFieldForAuto();
         AlgaeHandler.getInstance().reset();
-    }
+    }*/
 
+    /* MAPLE SIM:
     public void displaySimFieldToAdvantageScope() {
         if (Constants.currentMode != Constants.Mode.SIM) return;
 
@@ -408,5 +420,5 @@ public class RobotContainer {
                 "FieldSimulation/Algae", SimulatedArena.getInstance().getGamePiecesArrayByType("Algae"));
         Logger.recordOutput(
                 "FieldSimulation/Staged Algae", AlgaeHandler.getInstance().periodic());
-    }
+    }*/
 }
