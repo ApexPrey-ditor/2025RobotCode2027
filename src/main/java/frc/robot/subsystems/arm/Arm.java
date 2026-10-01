@@ -5,7 +5,7 @@
 package frc.robot.subsystems.arm;
 
 import org.wpilib.math.util.Units;
-import org.wpilib.command2.SubsystemBase;
+import org.wpilib.command3.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Constants.ArmConstants;
 import frc.robot.Constants.SimulationConstants;

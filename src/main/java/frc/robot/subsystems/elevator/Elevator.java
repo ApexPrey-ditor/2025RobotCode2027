@@ -5,7 +5,7 @@
 package frc.robot.subsystems.elevator;
 
 import org.wpilib.math.util.Units;
-import org.wpilib.command2.SubsystemBase;
+import org.wpilib.command3.Mechanism;
 import frc.robot.Constants;
 import frc.robot.Constants.ElevatorConstants;
 import frc.robot.util.RobotIdentity;
@@ -13,7 +13,7 @@ import frc.robot.util.RobotIdentity;
 import frc.robot.util.SmarterDashboard;
 import org.littletonrobotics.junction.Logger;
 
-public class Elevator extends SubsystemBase {
+public class Elevator extends Mechanism {
     // private InverseKinematics ik = new InverseKinematics();
 
     private double elevatorOffset = Constants.IDENTITY == RobotIdentity.EVE ? 0.6814 : 0.0;
